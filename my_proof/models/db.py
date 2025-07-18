@@ -15,7 +15,7 @@ class Contributors(Base):
     id = Column(Integer, primary_key=True)
     wallet_address = Column(String, nullable=False)
     ip_address_hash = Column(String)
-    storage_source = Column(String, nullable=False, default="google-drive")
+    storage_source = Column(String, nullable=False, default="credit-statement")
     storage_user_id_hash = Column(String)
     created_at = Column(DateTime, default=datetime.datetime.now(datetime.UTC))
 

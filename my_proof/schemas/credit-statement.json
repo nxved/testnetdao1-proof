@@ -1,0 +1,136 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Credit Card Statement Output Schema",
+  "description": "Defines the fully enriched structure of a credit card statement after processing. This includes all raw, optional, and computed fields, creating a high-value dataset for AI/ML training.",
+  "type": "object",
+  "properties": {
+    "statement_metadata": {
+      "type": "object",
+      "properties": {
+        "record_id": { "type": "string" },
+        "statement_date": { "type": "string", "format": "date" },
+        "statement_period": {
+          "type": "object",
+          "properties": {
+            "start_date": { "type": "string", "format": "date" },
+            "end_date": { "type": "string", "format": "date" }
+          }
+        },
+        "days_in_period": { "type": "integer" },
+        "card_identifier": { "type": "string" },
+        "payment_due_date": { "type": "string", "format": "date" },
+        "currency": { "type": "string" },
+        "statement_locale": { "type": "string" }
+      }
+    },
+    "account_info": {
+      "type": "object",
+      "properties": {
+        "card_brand": { "type": "string" },
+        "is_rewards_card": { "type": "boolean" },
+        "is_business_card": { "type": "boolean" },
+        "credit_limit": { "type": "number" }
+      }
+    },
+    "financial_summary": {
+      "type": "object",
+      "properties": {
+        "previous_balance": { "type": "number" },
+        "payments_credits": { "type": "number" },
+        "purchases": { "type": "number" },
+        "closing_balance": { "type": "number" },
+        "minimum_payment_due": { "type": "number" },
+        "fees_charged": { "type": "number" },
+        "interest_charged": { "type": "number" },
+        "available_credit": { "type": "number" },
+        "cash_advances": { "type": "number" },
+        "balance_transfers": { "type": "number" },
+        "total_debits": { "type": "number" },
+        "total_credits": { "type": "number" },
+        "over_limit_amount": { "type": "number" }
+      }
+    },
+    "transactions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "transaction_id": { "type": "string" },
+          "transaction_date": { "type": "string", "format": "date" },
+          "posting_date": { "type": "string", "format": "date" },
+          "description": { "type": "string" },
+          "amount": { "type": "number" },
+          "transaction_type": { "type": "string" },
+          "day_of_week": { "type": "integer" },
+          "day_of_month": { "type": "integer" },
+          "is_weekend": { "type": "boolean" },
+          "merchant_name": { "type": "string" },
+          "merchant_id": { "type": "string" },
+          "category_primary": { "type": "string" },
+          "category_detailed": { "type": "string" },
+          "channel": { "type": "string" },
+          "is_international": { "type": "boolean" },
+          "is_recurring": { "type": "boolean" }
+        }
+      }
+    },
+    "spending_patterns": {
+      "type": "object",
+      "properties": {
+        "total_transactions": { "type": "integer" },
+        "average_transaction_amount": { "type": "number" },
+        "std_dev_transaction_amount": { "type": "number" },
+        "median_transaction_amount": { "type": "number" },
+        "max_transaction_amount": { "type": "number" },
+        "min_transaction_amount": { "type": "number" },
+        "transactions_per_day": { "type": "number" },
+        "weekend_spending_ratio": { "type": "number" },
+        "night_spending_ratio": { "type": "number" },
+        "category_distribution": { "type": "object" },
+        "channel_distribution": { "type": "object" }
+      }
+    },
+    "risk_metrics": {
+      "type": "object",
+      "properties": {
+        "credit_utilization_ratio": { "type": ["number", "null"] },
+        "payment_ratio": { "type": "number" },
+        "cash_advance_ratio": { "type": "number" },
+        "international_transaction_ratio": { "type": "number" },
+        "high_risk_merchant_ratio": { "type": "number" },
+        "velocity_indicators": {
+          "type": "object",
+          "properties": {
+            "max_daily_transactions": { "type": "integer" },
+            "max_daily_amount": { "type": "number" },
+            "unusual_activity_flag": { "type": "boolean" }
+          }
+        }
+      }
+    },
+    "payment_history": {
+      "type": "object",
+      "properties": {
+        "payment_status": { "type": "string" }
+      }
+    },
+    "engineered_features": {
+      "type": "object",
+      "properties": {
+        "days_since_last_transaction": { "type": "integer" },
+        "days_since_last_payment": { "type": "integer" },
+        "spending_trend": { "type": "string" },
+        "spending_velocity": { "type": "number" },
+        "unique_merchants_count": { "type": "integer" },
+        "merchant_diversity_score": { "type": "number" },
+        "new_merchant_ratio": { "type": "number" },
+        "essential_spending_ratio": { "type": "number" },
+        "discretionary_spending_ratio": { "type": "number" },
+        "subscription_spending_ratio": { "type": "number" },
+        "spending_consistency_score": { "type": "number" },
+        "payment_reliability_score": { "type": "number" },
+        "merchant_loyalty_score": { "type": "number" }
+      }
+    }
+  }
+}

@@ -56,7 +56,7 @@ The main proof logic is implemented in `my_proof/proof.py`. To customize it, upd
 
 The proof can be configured using environment variables. When running in an enclave, the environment variables must be defined in the `my-proof.manifest.template` file as well. The following environment variables are used for this demo proof:
 
-- `GOOGLE_TOKEN`: The email address of the data contributor, to verify data ownership
+- `OWNER_ADDRESS`: The wallet address of the data contributor, to verify data ownership
 
 If you want to use a language other than Python, you can modify the Dockerfile to install the necessary dependencies and build the proof task in the desired language.
 
@@ -71,7 +71,7 @@ docker run \
 --volume $(pwd)/demo/sealed:/sealed \
 --volume $(pwd)/demo/input:/input \
 --volume $(pwd)/demo/output:/output \
---env GOOGLE_TOKEN=xxx \
+--env OWNER_ADDRESS=0x1234567890123456789012345678901234567890 \
 my-proof
 ```
 
@@ -132,7 +132,7 @@ docker run \
 --device /dev/sgx_enclave:/dev/sgx_enclave \
 --volume /var/run/aesmd:/var/run/aesmd \
 --volume /mnt/gsc-my-proof/sealed:/sealed \
---env USER_EMAIL=user123@gmail.com \
+--env OWNER_ADDRESS=0x1234567890123456789012345678901234567890 \
 gsc-my-proof
 ```
 

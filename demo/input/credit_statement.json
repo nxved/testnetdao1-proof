@@ -1,0 +1,179 @@
+{
+  "statement_metadata": {
+    "record_id": "stmt_2024_03_4532_abc123",
+    "statement_date": "2024-03-15",
+    "statement_period": {
+      "start_date": "2024-02-15",
+      "end_date": "2024-03-14"
+    },
+    "days_in_period": 28,
+    "card_identifier": "4532****1234",
+    "payment_due_date": "2024-04-10",
+    "currency": "USD",
+    "statement_locale": "en_US"
+  },
+  "account_info": {
+    "card_brand": "VISA",
+    "is_rewards_card": true,
+    "is_business_card": false,
+    "credit_limit": 5000.00
+  },
+  "financial_summary": {
+    "previous_balance": 1250.50,
+    "payments_credits": 1000.00,
+    "purchases": 1875.25,
+    "closing_balance": 2125.75,
+    "minimum_payment_due": 65.00,
+    "fees_charged": 0.00,
+    "interest_charged": 0.00,
+    "available_credit": 2874.25,
+    "cash_advances": 0.00,
+    "balance_transfers": 0.00,
+    "total_debits": 1875.25,
+    "total_credits": 1000.00,
+    "over_limit_amount": 0.00
+  },
+  "transactions": [
+    {
+      "transaction_id": "txn_001",
+      "transaction_date": "2024-02-16",
+      "posting_date": "2024-02-16",
+      "description": "STARBUCKS STORE #12345",
+      "amount": 5.75,
+      "transaction_type": "PURCHASE",
+      "day_of_week": 5,
+      "day_of_month": 16,
+      "is_weekend": false,
+      "merchant_name": "Starbucks",
+      "merchant_id": "merch_starbucks_12345",
+      "category_primary": "FOOD",
+      "category_detailed": "COFFEE_SHOP",
+      "channel": "POS",
+      "is_international": false,
+      "is_recurring": false
+    },
+    {
+      "transaction_id": "txn_002",
+      "transaction_date": "2024-02-18",
+      "posting_date": "2024-02-18",
+      "description": "AMAZON.COM PURCHASE",
+      "amount": 89.99,
+      "transaction_type": "PURCHASE",
+      "day_of_week": 7,
+      "day_of_month": 18,
+      "is_weekend": true,
+      "merchant_name": "Amazon",
+      "merchant_id": "merch_amazon_main",
+      "category_primary": "SHOPPING",
+      "category_detailed": "ONLINE_RETAIL",
+      "channel": "ONLINE",
+      "is_international": false,
+      "is_recurring": false
+    },
+    {
+      "transaction_id": "txn_003",
+      "transaction_date": "2024-02-20",
+      "posting_date": "2024-02-20",
+      "description": "SHELL GAS STATION",
+      "amount": 45.50,
+      "transaction_type": "PURCHASE",
+      "day_of_week": 2,
+      "day_of_month": 20,
+      "is_weekend": false,
+      "merchant_name": "Shell",
+      "merchant_id": "merch_shell_789",
+      "category_primary": "TRANSPORT",
+      "category_detailed": "FUEL",
+      "channel": "POS",
+      "is_international": false,
+      "is_recurring": false
+    },
+    {
+      "transaction_id": "txn_004",
+      "transaction_date": "2024-02-25",
+      "posting_date": "2024-02-25",
+      "description": "PAYMENT - THANK YOU",
+      "amount": -1000.00,
+      "transaction_type": "PAYMENT",
+      "day_of_week": 7,
+      "day_of_month": 25,
+      "is_weekend": true,
+      "merchant_name": "Payment",
+      "merchant_id": "payment_system",
+      "category_primary": "PAYMENT",
+      "category_detailed": "PAYMENT",
+      "channel": "ONLINE",
+      "is_international": false,
+      "is_recurring": false
+    },
+    {
+      "transaction_id": "txn_005",
+      "transaction_date": "2024-03-01",
+      "posting_date": "2024-03-01",
+      "description": "WALMART SUPERCENTER",
+      "amount": 127.48,
+      "transaction_type": "PURCHASE",
+      "day_of_week": 5,
+      "day_of_month": 1,
+      "is_weekend": false,
+      "merchant_name": "Walmart",
+      "merchant_id": "merch_walmart_456",
+      "category_primary": "SHOPPING",
+      "category_detailed": "GROCERY",
+      "channel": "POS",
+      "is_international": false,
+      "is_recurring": false
+    }
+  ],
+  "spending_patterns": {
+    "total_transactions": 5,
+    "average_transaction_amount": 375.05,
+    "std_dev_transaction_amount": 412.85,
+    "median_transaction_amount": 89.99,
+    "max_transaction_amount": 1000.00,
+    "min_transaction_amount": 5.75,
+    "transactions_per_day": 0.18,
+    "weekend_spending_ratio": 0.40,
+    "night_spending_ratio": 0.00,
+    "category_distribution": {
+      "FOOD": {"count": 1, "amount": 5.75, "percentage": 0.20},
+      "SHOPPING": {"count": 2, "amount": 217.47, "percentage": 0.40},
+      "TRANSPORT": {"count": 1, "amount": 45.50, "percentage": 0.20},
+      "PAYMENT": {"count": 1, "amount": 1000.00, "percentage": 0.20}
+    },
+    "channel_distribution": {
+      "POS": {"count": 3, "percentage": 0.60},
+      "ONLINE": {"count": 2, "percentage": 0.40}
+    }
+  },
+  "risk_metrics": {
+    "credit_utilization_ratio": 0.425,
+    "payment_ratio": 0.80,
+    "cash_advance_ratio": 0.00,
+    "international_transaction_ratio": 0.00,
+    "high_risk_merchant_ratio": 0.00,
+    "velocity_indicators": {
+      "max_daily_transactions": 1,
+      "max_daily_amount": 1000.00,
+      "unusual_activity_flag": false
+    }
+  },
+  "payment_history": {
+    "payment_status": "PAID_PARTIAL"
+  },
+  "engineered_features": {
+    "days_since_last_transaction": 14,
+    "days_since_last_payment": 18,
+    "spending_trend": "INCREASING",
+    "spending_velocity": 0.15,
+    "unique_merchants_count": 5,
+    "merchant_diversity_score": 0.85,
+    "new_merchant_ratio": 0.80,
+    "essential_spending_ratio": 0.65,
+    "discretionary_spending_ratio": 0.35,
+    "subscription_spending_ratio": 0.00,
+    "spending_consistency_score": 0.72,
+    "payment_reliability_score": 0.85,
+    "merchant_loyalty_score": 0.45
+  }
+}

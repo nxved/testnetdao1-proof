@@ -38,12 +38,6 @@ class Settings(BaseSettings):
         default="/output", description="Directory where output files will be written"
     )
 
-    # Google OAuth
-    GOOGLE_TOKEN: Optional[str] = Field(
-        default=None,
-        description="Google OAuth2 access token for user authentication",
-        min_length=20,
-    )
 
     class Config:
         env_file = ".env"
