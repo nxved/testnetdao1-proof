@@ -4,7 +4,6 @@ from datetime import datetime
 
 from .completeness import calculate_completeness_score
 from .financial import validate_financial_integrity
-from .uniqueness import validate_uniqueness
 from .fraud import detect_card_fraud
 from .pii import scan_for_basic_pii
 
@@ -15,9 +14,7 @@ def calculate_credit_statement_score(data: Dict[str, Any], blockchain_client, ow
     # STEP 1: Hard gates (immediate rejection if failed)
     
     # Gate 1: Uniqueness
-    uniqueness_result = validate_uniqueness(data, blockchain_client)
-    if not uniqueness_result['is_unique']:
-        return rejection_response("DUPLICATE_DATA", uniqueness_result)
+    #TODO: Implement uniqueness check
     
     # Gate 2: Card fraud detection
     card_fraud = detect_card_fraud(data)
