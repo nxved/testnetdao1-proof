@@ -6,10 +6,17 @@ from .completeness import calculate_completeness_score
 from .financial import validate_financial_integrity
 from .fraud import detect_card_fraud
 from .pii import scan_for_basic_pii
+from ..country_config import country_scoring
 
 
 def calculate_credit_statement_score(data: Dict[str, Any], blockchain_client, owner_address: str) -> Dict[str, Any]:
-    """Our sophisticated scoring converted to Vana format"""
+    """Our sophisticated scoring converted to Vana format with country-based fair rewards"""
+    
+    # Extract country information for fair scoring
+    country_code = data.get('statement_metadata', {}).get('country_code', 'US')
+    country_info = country_scoring.get_country_info(country_code)
+    
+    logging.info(f"Processing statement from {country_info['country_name']} (Tier {country_info['tier']})")
     
     # STEP 1: Hard gates (immediate rejection if failed)
     
@@ -26,59 +33,60 @@ def calculate_credit_statement_score(data: Dict[str, Any], blockchain_client, ow
     if pii_scan['pii_detected']:
         return rejection_response("PII_DETECTED", pii_scan)
     
-    # STEP 2: Quality scoring (105-point system)
+    # STEP 2: Quality scoring (100-point system)
     
-    # 1. BASE SCORE (60 points) - Core Data Completeness
-    base_score = calculate_base_score(data)  # 0-60 points
+    # 1. BASE SCORE (50 points) - Core Data Completeness
+    base_score = calculate_base_score(data)  # 0-50 points
     
-    # 2. ENHANCEMENT BONUS (25 points) - Optional Field Richness  
+    # 2. ENHANCEMENT SCORE (25 points) - Optional Field Richness  
     enhancement_score = calculate_enhancement_score(data)  # 0-25 points
     
     # 3. COMPUTED VALUE (15 points) - ML Feature Quality
     computed_score = calculate_computed_value_score(data)  # 0-15 points
     
-    # 4. SMART RELIABILITY BONUSES (up to 5 points)
-    bonus_score = calculate_reliability_bonuses(data)  # 0-5 points
+    # 4. RELIABILITY SCORE (10 points) - Data Quality Excellence
+    reliability_score = calculate_reliability_bonuses(data)  # 0-10 points
     
-    # Total our product score (0-105 points)
-    total_points = base_score + enhancement_score + computed_score + bonus_score
+    # Total our product score (0-100 points) before country adjustment
+    base_total_points = base_score + enhancement_score + computed_score + reliability_score
     
-    # Convert to Vana scale (0.0 to 1.0)
-    vana_score = min(total_points / 100.0, 1.0)  # Cap at 1.0
+    # STEP 3: Apply country-based fair scoring
+    country_adjusted = country_scoring.calculate_country_adjusted_score(base_total_points, country_code)
     
-    # Map to Vana's 4-component structure for compatibility
-    quality = (base_score + enhancement_score) / 85.0  # 85 = 60+25
-    authenticity = computed_score / 15.0
-    uniqueness = 1.0  # Always 1.0 if we reach here
-    ownership = 1.0 if owner_address else 0.0
+    # Use country-adjusted values for final response
+    total_points = country_adjusted['final_score']
+    vana_score = country_adjusted['vana_score']
+    quality = vana_score  # Use comprehensive score as quality
     
     return {
-        'score': vana_score,  # Final score for Vana (0.0-1.0)
-        'total_points': total_points,  # Our internal scoring (0-105)
+        'score': vana_score,  # Final score for Vana (0.0-1.0) 
+        'total_points': total_points,  # Country-adjusted scoring
         'quality': quality,
-        'authenticity': authenticity, 
-        'uniqueness': uniqueness,
-        'ownership': ownership,
         'valid': True,
+        'country_info': country_adjusted['country_info'],  # Include country details
         'breakdown': {
             'base_score': base_score,
-            'enhancement_score': enhancement_score,
+            'enhancement_score': enhancement_score, 
             'computed_score': computed_score,
-            'bonus_score': bonus_score
+            'reliability_score': reliability_score,
+            'raw_total': base_total_points,  # Pre-country adjustment
+            'country_multiplier': country_adjusted['country_multiplier'],
+            'scarcity_bonus': country_adjusted['scarcity_bonus'],
+            'country_adjusted_total': country_adjusted['adjusted_total']
         }
     }
 
 
 def calculate_base_score(data: Dict[str, Any]) -> float:
-    """Core required fields and smart extraction quality (60 points)"""
+    """Core required fields and smart extraction quality (50 points)"""
     
-    # Required fields present (40 points)
+    # Required fields present (35 points)
     completeness = calculate_completeness_score(data)
-    required_fields_score = completeness['tier1_score'] * 40
+    required_fields_score = completeness['tier1_score'] * 35
     
-    # Smart extraction quality (20 points)  
+    # Smart extraction quality (15 points)  
     financial_integrity = validate_financial_integrity(data)
-    extraction_quality = financial_integrity['balance_score'] * 20
+    extraction_quality = financial_integrity['balance_score'] * 15
     
     return required_fields_score + extraction_quality
 
@@ -127,25 +135,31 @@ def calculate_computed_value_score(data: Dict[str, Any]) -> float:
 
 
 def calculate_reliability_bonuses(data: Dict[str, Any]) -> float:
-    """Bonus points for exceptional data quality (up to 5 points)"""
+    """Reliability points for data quality excellence (up to 10 points)"""
     
-    bonus = 0
+    score = 0
     
-    # High transaction volume (50+ txns): +2 points  
+    # Transaction volume scoring (4 points)
     transactions = data.get('transactions', [])
     if len(transactions) >= 50:
-        bonus += 2
+        score += 4
+    elif len(transactions) >= 25:
+        score += 3
+    elif len(transactions) >= 10:
+        score += 2
+    elif len(transactions) >= 5:
+        score += 1
     
-    # Complete merchant data: +2 points
+    # Complete merchant data: +3 points
     if transactions and all(t.get('merchant_name') for t in transactions):
-        bonus += 2
+        score += 3
     
-    # Perfect financial integrity: +1 point
+    # Perfect financial integrity: +3 points
     financial_check = validate_financial_integrity(data)
     if financial_check['balance_score'] == 1.0 and financial_check['utilization_score'] == 1.0:
-        bonus += 1
+        score += 3
     
-    return min(bonus, 5)  # Cap at 5 points
+    return min(score, 10)  # Cap at 10 points
 
 
 def validate_spending_patterns(data: Dict[str, Any]) -> float:
@@ -212,9 +226,6 @@ def rejection_response(reason: str, details: Dict[str, Any] = None) -> Dict[str,
         'score': 0.0,           # Zero for Vana
         'total_points': 0,      # Zero internal points
         'quality': 0.0,         # Zero quality
-        'authenticity': 0.0,    # Zero authenticity  
-        'uniqueness': 0.0,      # Zero uniqueness
-        'ownership': 0.0,       # Zero ownership
         'valid': False,         # Invalid submission
         'rejected': True,
         'reason': reason,

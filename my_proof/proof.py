@@ -65,9 +65,10 @@ class Proof:
         self.proof_response.valid = True
         self.proof_response.score = validation_result['score']
         self.proof_response.quality = validation_result['quality']
-        self.proof_response.authenticity = validation_result['authenticity']
-        self.proof_response.uniqueness = validation_result['uniqueness']
-        self.proof_response.ownership = validation_result['ownership']
+        # Remove authenticity, uniqueness, ownership - we don't calculate these
+        self.proof_response.authenticity = 1.0  # Default required by Vana
+        self.proof_response.uniqueness = 1.0    # Default required by Vana
+        self.proof_response.ownership = 1.0     # Default required by Vana
         
         # Set detailed attributes
         self.proof_response.attributes = {

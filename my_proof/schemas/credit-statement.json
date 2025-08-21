@@ -20,7 +20,9 @@
         "card_identifier": { "type": "string" },
         "payment_due_date": { "type": "string", "format": "date" },
         "currency": { "type": "string" },
-        "statement_locale": { "type": "string" }
+        "statement_locale": { "type": "string" },
+        "country_code": { "type": "string", "description": "ISO 2-letter country code" },
+        "country_name": { "type": "string", "description": "Full country name" }
       }
     },
     "account_info": {
