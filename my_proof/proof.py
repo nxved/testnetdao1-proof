@@ -4,7 +4,6 @@ import os
 from datetime import datetime
 
 from my_proof.models.proof_response import ProofResponse
-from my_proof.utils.blockchain import BlockchainClient
 from my_proof.utils.schema import validate_schema
 from my_proof.config import settings
 from my_proof.validators.scoring import calculate_credit_statement_score
@@ -13,37 +12,23 @@ from my_proof.validators.scoring import calculate_credit_statement_score
 class Proof:
     def __init__(self):
         self.proof_response = ProofResponse(dlp_id=settings.DLP_ID)
-        try:
-            self.blockchain_client = BlockchainClient()
-            self.blockchain_available = True
-        except Exception as e:
-            logging.warning(f"Blockchain client initialization failed: {str(e)}")
-            self.blockchain_available = False
 
     def generate(self) -> ProofResponse:
         """Generate proof with comprehensive validation pipeline"""
         
         logging.info("Starting credit statement proof generation")
         
-        # Load and parse input data
         input_data = self._load_input_data()
         if not input_data:
             return self._set_rejection_response("NO_INPUT_DATA")
         
-        # Basic schema validation first
         schema_type, schema_valid = validate_schema(input_data)
         if not schema_valid:
             return self._set_rejection_response("INVALID_SCHEMA")
         
-        # Run comprehensive validation
-        validation_result = calculate_credit_statement_score(
-            input_data, 
-            self.blockchain_client if self.blockchain_available else None,
-            settings.OWNER_ADDRESS
-        )
+        validation_result = calculate_credit_statement_score(input_data)
         
         if validation_result.get('rejected'):
-            # Hard rejection - set zero scores
             self.proof_response.valid = False
             self.proof_response.score = 0.0
             self.proof_response.quality = 0.0
@@ -61,16 +46,12 @@ class Proof:
             logging.error(f"Data rejected: {validation_result['reason']}")
             return self.proof_response
         
-        # Successful validation - set scores
         self.proof_response.valid = True
         self.proof_response.score = validation_result['score']
         self.proof_response.quality = validation_result['quality']
-        # Remove authenticity, uniqueness, ownership - we don't calculate these
-        self.proof_response.authenticity = 1.0  # Default required by Vana
-        self.proof_response.uniqueness = 1.0    # Default required by Vana
-        self.proof_response.ownership = 1.0     # Default required by Vana
-        
-        # Set detailed attributes
+        self.proof_response.authenticity = 1.0
+        self.proof_response.uniqueness = 1.0
+        self.proof_response.ownership = 1.0
         self.proof_response.attributes = {
             'schema_type': schema_type,
             'record_id': input_data.get('statement_metadata', {}).get('record_id'),
@@ -80,8 +61,6 @@ class Proof:
             'score_breakdown': validation_result['breakdown'],
             'has_enriched_features': bool(input_data.get('engineered_features'))
         }
-        
-        # Set metadata
         self.proof_response.metadata = {
             'schema_type': schema_type,
             'validation_timestamp': datetime.now().isoformat(),
